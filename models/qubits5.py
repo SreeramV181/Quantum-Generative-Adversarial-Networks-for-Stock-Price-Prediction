@@ -16,15 +16,17 @@ def generator(x, w):
         w: variables of the circuit to optimize
     """
 
-    #Entangle qubits,
+    x.append(1)
+
+    #
     for i in range(0, NUM_QUBITS - 1):
-        qml.CNOT(wires=[i, i+1])
+        qml.Hadamard(wires=i)
 
     #Apply a layer of RX
-    for i in range(0, NUM_QUBITS):
-        qml.RX(w[0], wires=i)
+    for i in range(0, NUM_QUBITS - 1):
+        qml.RX(w[i] * x[i], wires=i)
 
-def discriminator(w):
+def discriminator(x, w):
     """
     Variational circuit that predicts next stock price based on previous 4 stock prices
 
@@ -33,16 +35,27 @@ def discriminator(w):
         w: variables of the circuit to optimize
     """
     #Entangle qubits,
-    for i in range(0, NUM_QUBITS - 1):
-        qml.CNOT(wires=[i, i+1])
+    for i in range(0, NUM_QUBITS):
+        qml.Hadamard(wires=i)
 
     #Apply a layer of RX
     for i in range(0, NUM_QUBITS):
-        qml.RX(w[0], wires=i)
+        qml.RX(w[i] * x[i], wires=i)
 
 @qml.qnode(dev)
-def real_disc_circuit():
+def real_disc_circuit(data, disc_weights):
     """
     Feeds discriminator with true examples
 
     """
+    discriminator(data, disc_weights)
+    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+
+@qml.qnode(dev)
+def real_gen_circuit(data, gen_weights):
+    """
+    Feeds discriminator with true examples
+
+    """
+    generator(data, gen_weights)
+    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS - 1)])

@@ -55,7 +55,15 @@ def real_disc_circuit(data, disc_weights):
 def real_gen_circuit(data, gen_weights):
     """
     Feeds discriminator with true examples
-
     """
     generator(data, gen_weights)
-    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS - 1)])
+    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+
+def disc_cost(data, disc_weights, real):
+    output = int("".join(str(real_disc_circuit(data, disc_weights)) for x in test_list), 2)
+    return (output - real)**2
+
+
+def gen_cost(data, gen_weights, real):
+    output = int("".join(str(real_gen_circuit(data, gen_weights)) for x in test_list), 2)
+    return (output - real)**2

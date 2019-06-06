@@ -97,7 +97,7 @@ def real_disc_circuit(data, disc_weights):
 
     """
     discriminator(data, disc_weights)
-    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+    return qml.expval.Hadamard(wires=[i for i in range(NUM_FEATURES + 1)])
 
 @qml.qnode(dev)
 def real_gen_circuit(data, gen_weights):
@@ -111,11 +111,9 @@ def disc_cost(data, disc_weights, real):
     output = int("".join(str(x) for x in real_gen_circuit(data, disc_weights)), 2)
     return (output - real)**2
 
-
 def gen_cost(data, gen_weights, real):
     output = int("".join(str(x) for x in real_gen_circuit(data, gen_weights)), 2)
     return (output - real)**2
-
 
 
 

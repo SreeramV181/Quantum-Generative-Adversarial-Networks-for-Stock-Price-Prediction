@@ -69,7 +69,7 @@ def generator(x, theta_g):
     #     qml.RX(w[i] * x[i], wires=i)
 
     # initial_guess_theta = np.random.uniform(low=0, high=2 * np.pi, size=(NUM_QUBITS, NUM_LAYERS, 2))
-    ansatz(x, theta_g)
+    gen_ansatz(x, theta_g)
 
 def discriminator(x, theta_d):
     """
@@ -87,7 +87,7 @@ def discriminator(x, theta_d):
     # #Apply a layer of RX
     # for i in range(0, NUM_QUBITS):
     #     qml.RX(w[i] * x[i], wires=i)
-    ansatz(x, theta_d)
+    disc_ansatz(x, theta_d)
 
 
 @qml.qnode(dev)
@@ -108,12 +108,12 @@ def real_gen_circuit(data, gen_weights):
     return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
 
 def disc_cost(data, disc_weights, real):
-    output = int("".join(str(real_disc_circuit(data, disc_weights)) for x in test_list), 2)
+    output = int("".join(str(x) for x in real_gen_circuit(data, disc_weights)), 2)
     return (output - real)**2
 
 
 def gen_cost(data, gen_weights, real):
-    output = int("".join(str(real_gen_circuit(data, gen_weights)) for x in test_list), 2)
+    output = int("".join(str(x) for x in real_gen_circuit(data, gen_weights)), 2)
     return (output - real)**2
 
 

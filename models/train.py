@@ -26,7 +26,7 @@ def main():
     print("Probability for the discriminator to classify real data correctly: ", prob_real_true(disc_weights))
     print("Probability for the discriminator to classify fake data as real: ", prob_fake_true(gen_weights, disc_weights))
 
-    print("Training the generator.")
+    print("Training the generator.df")
 
     # train generator
     for it in range(200):

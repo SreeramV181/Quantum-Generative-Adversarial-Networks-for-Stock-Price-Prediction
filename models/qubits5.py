@@ -164,8 +164,8 @@ def gen_cost(gen_weights, disc_weights):
 
 def main():
     eps = 1e-2
-    gen_weights = np.random.normal(loc=np.pi, scale=eps, size=(NUM_QUBITS, NUM_LAYERS, 2))
-    disc_weights = np.random.normal(loc=0.0, scale=eps, size=(NUM_QUBITS, NUM_LAYERS, 2))
+    gen_weights = np.random.normal(loc=np.pi, scale=eps, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
+    disc_weights = np.random.normal(loc=0.0, scale=eps, size=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER))
     opt = GradientDescentOptimizer(0.1)
 
 

@@ -2,34 +2,53 @@ import pennylane as qml
 from pennylane import numpy as np
 from pennylane.optimize import *
 
-NUM_QUBITS = 5 # Constant determining number of qubits
-NUM_LAYERS = 3 # Layer count
+NUM_QUBITS = 8 # Constant determining number of qubits
+NUM_LAYERS = 3 # Number of layers in ansatz
+PARAMS_PER_LAYER = 2 #Number of parameters per layer; varies based on layer architecture
+NUM_FEATURES = 4 # Number of previous stock prices used to predict next stock price
 
 # Create quantum computing device on which to perform calculations
-dev = qml.device('default.qubit', wires=5)
+dev = qml.device('default.qubit', wires=NUM_QUBITS)
 
-def ansatz(x, theta):
+#Defines the architecture used for the generator
+def gen_ansatz(x, theta):
+    #Reshape theta so params are easier to access
+    theta = theta.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
 
-    theta = theta.reshape(NUM_QUBITS, NUM_LAYERS, 2)
-    qs = theta.shape[0]
-    layers = theta.shape[1]
-    rxrz = theta.shape[2]
-
-    for i in range(layers):
-
-        # hadamard everything
-        for q in range(qs):
+    for i in range(NUM_LAYERS):
+        # Hadamard
+        for q in range(NUM_QUBITS):
             qml.Hadamard(wires=q)
 
-        # rx rz everything
-        for q in range(qs):
+        # RX RZ
+        for q in range(NUM_QUBITS):
             qml.RX(x[q] * theta[q, i, 0], wires=q)
             qml.RZ(x[q] * theta[q, i, 1], wires=q)
 
-        # entanglement
-        for q in range(qs-1):
+        # Entanglement
+        for q in range(NUM_QUBITS-1):
             qml.CNOT(wires=[q, q + 1])
-        
+
+    return pq
+
+#Defines the architecture used for the discriminator
+def disc_ansatz(x, theta):
+    #Reshape theta so params are easier to access
+    theta = theta.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
+
+    for i in range(NUM_LAYERS):
+        # Hadamard
+        for q in range(NUM_FEATURES + 1):
+            qml.Hadamard(wires=q)
+
+        # RX RZ
+        for q in range(NUM_FEATURES + 1):
+            qml.RX(x[q] * theta[q, i, 0], wires=q)
+            qml.RZ(x[q] * theta[q, i, 1], wires=q)
+
+        # Entanglement
+        for q in range(NUM_FEATURES):
+            qml.CNOT(wires=[q, q + 1])
 
     return pq
 
@@ -94,7 +113,6 @@ def real_gen_circuit(data, gen_weights):
     Feeds discriminator with true examples
     """
     generator(data, gen_weights)
-<<<<<<< HEAD
     return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
 
 def disc_cost(data, disc_weights, real):
@@ -105,8 +123,6 @@ def disc_cost(data, disc_weights, real):
 def gen_cost(data, gen_weights, real):
     output = int("".join(str(real_gen_circuit(data, gen_weights)) for x in test_list), 2)
     return (output - real)**2
-=======
-    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS - 1)])
 
 
 
@@ -142,7 +158,7 @@ def disc_cost(gen_weights, disc_weights):
     Args:
         disc_weights: variables of the discriminator
     """
-    cost = prob_fake_true(gen_weights, disc_weights) - prob_real_true(disc_weights) 
+    cost = prob_fake_true(gen_weights, disc_weights) - prob_real_true(disc_weights)
     return cost
 
 
@@ -165,7 +181,7 @@ def main():
 
     print("Training the discriminator.")
     for it in range(50):
-        disc_weights = opt.step(disc_cost, disc_weights) 
+        disc_weights = opt.step(disc_cost, disc_weights)
         cost = disc_cost(gen_weights, disc_weights)
         if it % 5 == 0:
             print("Step {}: cost = {}".format(it+1, cost))
@@ -181,7 +197,7 @@ def main():
         cost = -gen_cost(gen_weights, disc_weights)
         if it % 5 == 0:
             print("Step {}: cost = {}".format(it, cost))
-    
+
     print("Probability for the discriminator to classify real data correctly: ", prob_real_true(disc_weights))
     print("Probability for the discriminator to classify fake data as real: ", prob_fake_true(gen_weights, disc_weights))
 

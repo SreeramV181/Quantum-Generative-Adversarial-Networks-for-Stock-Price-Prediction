@@ -29,8 +29,6 @@ def gen_ansatz(x, theta):
         for q in range(NUM_QUBITS-1):
             qml.CNOT(wires=[q, q + 1])
 
-    return pq
-
 #Defines the architecture used for the discriminator
 def disc_ansatz(x, theta):
     #Reshape theta so params are easier to access
@@ -50,10 +48,6 @@ def disc_ansatz(x, theta):
         for q in range(NUM_FEATURES):
             qml.CNOT(wires=[q, q + 1])
 
-    return pq
-
-
-
 def generator(x, theta):
     """
     Variational circuit meant to generate next stock price given 4 previous prices
@@ -62,8 +56,6 @@ def generator(x, theta):
         x: array containing previous 4 stock prices
         w: variables of the circuit to optimize
     """
-
-    x.append(1)
 
     # hi
 

@@ -116,50 +116,6 @@ def gen_cost(data, gen_weights, real):
     return (output - real)**2
 
 
-
-# copy pasted code
-def prob_real_true(x, disc_weights):
-    """Probability that the discriminator guesses correctly on real data.
-    Args:
-        disc_weights: variables of the discriminator
-        x: one single example
-    """
-    true_disc_output = real_disc_circuit(x, disc_weights)
-    # convert to probability
-    prob_real_true = (true_disc_output + 1) / 2
-    return prob_real_true
-
-
-def prob_fake_true(gen_weights, disc_weights):
-    """Probability that the discriminator guesses wrong on fake data.
-    Args:
-        gen_weights: variables of the generator
-        disc_weights: variables of the discriminator
-    """
-    fake_disc_output = gen_disc_circuit(gen_weights, disc_weights)
-    # convert to probability
-    prob_fake_true = (fake_disc_output + 1) / 2
-    return prob_fake_true # generator wants to minimize this prob
-
-
-def disc_cost(gen_weights, disc_weights):
-    """Cost for the discriminator. Contains two terms: the probability of classifying
-    fake data as real, and the probability of classifying real data correctly.
-    Args:
-        disc_weights: variables of the discriminator
-    """
-    cost = prob_fake_true(gen_weights, disc_weights) - prob_real_true(disc_weights)
-    return cost
-
-
-def gen_cost(gen_weights, disc_weights):
-    """Cost for the generator. Contains only the probability of fake data being classified
-    as real.
-    Args:
-        gen_weights: variables of the generator
-    """
-    return -prob_fake_true(gen_weights, disc_weights)
-
 def main():
     eps = 1e-2
     gen_weights = np.random.normal(loc=np.pi, scale=eps, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))

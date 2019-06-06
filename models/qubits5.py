@@ -11,9 +11,9 @@ NUM_FEATURES = 4 # Number of previous stock prices used to predict next stock pr
 dev = qml.device('default.qubit', wires=NUM_QUBITS)
 
 #Defines the architecture used for the generator
-def gen_ansatz(x, theta):
+def gen_ansatz(x, theta_g):
     #Reshape theta so params are easier to access
-    theta = theta.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
+    theta_g = theta_g.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
 
     for i in range(NUM_LAYERS):
         # Hadamard
@@ -22,17 +22,17 @@ def gen_ansatz(x, theta):
 
         # RX RZ
         for q in range(NUM_QUBITS):
-            qml.RX(x[q] * theta[q, i, 0], wires=q)
-            qml.RZ(x[q] * theta[q, i, 1], wires=q)
+            qml.RX(x[q] * theta_g[q, i, 0], wires=q)
+            qml.RZ(x[q] * theta_g[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_QUBITS-1):
             qml.CNOT(wires=[q, q + 1])
 
 #Defines the architecture used for the discriminator
-def disc_ansatz(x, theta):
+def disc_ansatz(x, theta_d):
     #Reshape theta so params are easier to access
-    theta = theta.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
+    theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
 
     for i in range(NUM_LAYERS):
         # Hadamard
@@ -41,14 +41,14 @@ def disc_ansatz(x, theta):
 
         # RX RZ
         for q in range(NUM_FEATURES + 1):
-            qml.RX(x[q] * theta[q, i, 0], wires=q)
-            qml.RZ(x[q] * theta[q, i, 1], wires=q)
+            qml.RX(x[q] * theta_d[q, i, 0], wires=q)
+            qml.RZ(x[q] * theta_d[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_FEATURES):
             qml.CNOT(wires=[q, q + 1])
 
-def generator(x, theta):
+def generator(x, theta_g):
     """
     Variational circuit meant to generate next stock price given 4 previous prices
 
@@ -69,9 +69,9 @@ def generator(x, theta):
     #     qml.RX(w[i] * x[i], wires=i)
 
     # initial_guess_theta = np.random.uniform(low=0, high=2 * np.pi, size=(NUM_QUBITS, NUM_LAYERS, 2))
-    ansatz(x, theta)
+    ansatz(x, theta_g)
 
-def discriminator(x, theta):
+def discriminator(x, theta_d):
     """
     Variational circuit that predicts next stock price based on previous 4 stock prices
 
@@ -87,7 +87,7 @@ def discriminator(x, theta):
     # #Apply a layer of RX
     # for i in range(0, NUM_QUBITS):
     #     qml.RX(w[i] * x[i], wires=i)
-    ansatz(x, theta)
+    ansatz(x, theta_d)
 
 
 @qml.qnode(dev)

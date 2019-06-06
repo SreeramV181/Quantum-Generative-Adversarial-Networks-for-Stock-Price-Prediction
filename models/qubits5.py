@@ -108,7 +108,7 @@ def real_gen_circuit(data, gen_weights):
     return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
 
 def disc_cost(data, disc_weights, real):
-    output = int("".join(str(x) for x in real_gen_circuit(data, disc_weights)), 2)
+    output = int("".join(str(x) for x in real_disc_circuit(data, disc_weights)), 2)
     return (output - real)**2
 
 def gen_cost(data, gen_weights, real):

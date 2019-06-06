@@ -23,9 +23,6 @@ def main():
         if it % 5 == 0:
             print("Step {}: cost = {}".format(it+1, cost))
 
-    print("Probability for the discriminator to classify real data correctly: ", prob_real_true(disc_weights))
-    print("Probability for the discriminator to classify fake data as real: ", prob_fake_true(gen_weights, disc_weights))
-
     print("Training the generator.df")
 
     # train generator

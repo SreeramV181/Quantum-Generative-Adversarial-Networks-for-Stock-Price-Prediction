@@ -1,3 +1,5 @@
+# deprecated
+
 import csv
 import random
 raw = []

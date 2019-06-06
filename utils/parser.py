@@ -20,7 +20,7 @@ def parseCSV(filename, num_qubits = 8):
 	raw.reverse()
 	# window_size = 5
 	# print(len(raw))
-	# bucket_size = int(max_val / buckets)
+	bucket_size = int(max_val / buckets)
 	# print(bucket_size)
 	data_pairs = []
 	# print(raw)

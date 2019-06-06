@@ -115,15 +115,11 @@ def gen_cost(data, gen_weights, real):
     output = int("".join(str(x) for x in real_gen_circuit(data, gen_weights)), 2)
     return (output - real)**2
 
-
 def main():
     eps = 1e-2
     gen_weights = np.random.normal(loc=np.pi, scale=eps, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
     disc_weights = np.random.normal(loc=0.0, scale=eps, size=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER))
     opt = GradientDescentOptimizer(0.1)
-
-
-
 
     print("Training the discriminator.")
     for it in range(50):
@@ -153,4 +149,3 @@ def main():
 
 if __name__ == '__main__':
     main()
->>>>>>> e2ebde79635fdef6230d3967ab2298ac9f3c410d

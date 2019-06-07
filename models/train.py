@@ -34,9 +34,9 @@ def main():
             def disc_cost(d_weights):
                 cost = 0.0
                 for j in range(MINIBATCH_SIZE):
-                    D_real = real_disc_circuit(data[j][0] + [data[j][1]], d_weights)
-                    G_real = real_gen_circuit(data[j][0], gen_weights)
-                    D_fake = real_disc_circuit(data[j][0] + [G_real], d_weights)
+                    D_real = prob_real(real_disc_circuit(data[j][0] + [data[j][1]], d_weights))
+                    G_real = gen_output(real_gen_circuit(data[j][0], gen_weights))
+                    D_fake = prob_real(real_disc_circuit(data[j][0] + [G_real], d_weights))
                     cost -= np.log(D_real) + np.log(1 - D_fake)
                 cost /= MINIBATCH_SIZE
                 return cost
@@ -44,8 +44,8 @@ def main():
             def gen_cost(g_weights):
                 cost = 0.0
                 for j in range(MINIBATCH_SIZE):
-                    G_real = real_gen_circuit(data[j][0], g_weights)
-                    D_fake = real_disc_circuit(data[j][0] + [G_real], disc_weights)
+                    G_real = gen_output(real_gen_circuit(data[j][0], g_weights))
+                    D_fake = prob_real(real_disc_circuit(data[j][0] + [G_real], disc_weights))
                     cost -= np.log(D_fake)
                 cost /= MINIBATCH_SIZE
                 return cost

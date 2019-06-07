@@ -19,8 +19,8 @@ def main():
     training_data = parseCSV("data/daily_adjusted_FB.csv")
 
     #Initialize weights
-    gen_weights = torch.randn(sizes=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER), dtype=torch.float64, requires_grad=True) * EPS + np.pi
-    disc_weights = torch.randn(sizes=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER), dtype=torch.float64, requires_grad=True) * EPS
+    gen_weights = torch.tensor(torch.randn(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER, dtype=torch.float64) * EPS + np.pi, requires_grad=True)
+    disc_weights = torch.tensor(torch.randn(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER, dtype=torch.float64) * EPS, requires_grad=True)
 
     #Initialize optimizer
     optimizer = torch.optim.SGD(params=[gen_weights, disc_weights], lr=.1, momentum=.9)

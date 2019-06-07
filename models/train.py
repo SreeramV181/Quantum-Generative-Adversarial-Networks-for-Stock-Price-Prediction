@@ -34,6 +34,7 @@ def main():
             def disc_cost(d_weights):
                 cost = 0.0
                 for j in range(MINIBATCH_SIZE):
+                    print(data[j])
                     D_real = prob_real(real_disc_circuit(data[j][0] + [data[j][1]], d_weights))
                     G_real = gen_output(real_gen_circuit(data[j][0], gen_weights))
                     D_fake = prob_real(real_disc_circuit(data[j][0] + [G_real], d_weights))

@@ -15,7 +15,7 @@ dev = qml.device('default.qubit', wires=NUM_QUBITS)
 #Defines the architecture used for the generator
 def gen_ansatz(x, theta_g):
     #Reshape theta so params are easier to access
-    theta_g = theta_g.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
+    #theta_g = theta_g.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
 
     for i in range(NUM_LAYERS):
         # Hadamard
@@ -34,7 +34,7 @@ def gen_ansatz(x, theta_g):
 #Defines the architecture used for the discriminator
 def disc_ansatz(x, theta_d):
     #Reshape theta so params are easier to access
-    theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
+    #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
 
     for i in range(NUM_LAYERS):
         # Hadamard

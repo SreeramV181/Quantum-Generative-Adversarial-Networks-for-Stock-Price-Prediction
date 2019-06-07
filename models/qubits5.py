@@ -24,8 +24,8 @@ def gen_ansatz(theta_g, x=None):
 
         # RX RZ
         for q in range(NUM_QUBITS):
-            qml.RX(x[q // 2] * theta_g[q, i, 0], wires=q)
-            qml.RZ(x[q // 2] * theta_g[q, i, 1], wires=q)
+            qml.RX(x[q // 2].val * theta_g[q, i, 0], wires=q)
+            qml.RZ(x[q // 2].val * theta_g[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_QUBITS-1):
@@ -35,7 +35,7 @@ def gen_ansatz(theta_g, x=None):
 def disc_ansatz(theta_d, x=None):
     #Reshape theta so params are easier to access
     #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
-
+    print(x)
     print("Entered disc ansatz")
     for i in range(NUM_LAYERS):
         # Hadamard
@@ -46,8 +46,8 @@ def disc_ansatz(theta_d, x=None):
         # RX RZ
         print("RX RZ layer {}".format(i + 1))
         for q in range(NUM_FEATURES + 1):
-            qml.RX(x[q] * theta_d[q, i, 0], wires=q)
-            qml.RZ(x[q] * theta_d[q, i, 1], wires=q)
+            qml.RX(x[q].val * theta_d[q, i, 0], wires=q)
+            qml.RZ(x[q].val * theta_d[q, i, 1], wires=q)
 
         # Entanglement
         print("Entanglement layer {}".format(i + 1))

@@ -13,7 +13,7 @@ NUM_FEATURES = 4 # Number of previous stock prices used to predict next stock pr
 dev = qml.device('default.qubit', wires=NUM_QUBITS)
 
 #Defines the architecture used for the generator
-def gen_ansatz(x=None, theta_g):
+def gen_ansatz(theta_g, x=None):
     #Reshape theta so params are easier to access
     #theta_g = theta_g.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
 
@@ -32,7 +32,7 @@ def gen_ansatz(x=None, theta_g):
             qml.CNOT(wires=[q, q + 1])
 
 #Defines the architecture used for the discriminator
-def disc_ansatz(x=None, theta_d):
+def disc_ansatz(theta_d, x=None):
     #Reshape theta so params are easier to access
     #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
 

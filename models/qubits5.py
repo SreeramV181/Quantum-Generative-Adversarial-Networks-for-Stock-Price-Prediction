@@ -22,8 +22,8 @@ def gen_ansatz(x, theta_g):
 
         # RX RZ
         for q in range(NUM_QUBITS):
-            qml.RX(x[q] * theta_g[q, i, 0], wires=q)
-            qml.RZ(x[q] * theta_g[q, i, 1], wires=q)
+            qml.RX(x[q // 2] * theta_g[q, i, 0], wires=q)
+            qml.RZ(x[q // 2] * theta_g[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_QUBITS-1):
@@ -97,7 +97,7 @@ def real_disc_circuit(data, disc_weights):
 
     """
     discriminator(data, disc_weights)
-    votes = qml.expval.Hadamard(wires=[i for i in range(NUM_FEATURES + 1)])
+    votes = [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
     return np.sum(votes)/5
 
 @qml.qnode(dev)
@@ -106,23 +106,22 @@ def real_gen_circuit(data, gen_weights):
     Feeds discriminator with true examples
     """
     generator(data, gen_weights)
-    measurements = qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+    measurements = [qml.expval.Hadamard(i) for i in range(NUM_QUBITS)]
     output = 0.0
     for i in range(len(measurements)):
         output += measurements[i] * 2**i
     return output
 
-def disc_cost(data, gen_weights, disc_weights):
-    D_real = real_disc_circuit(data, disc_weights)
-    G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
-    D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
-    return -np.log(D_real) - np.log(1 - D_fake)
-
-def gen_cost(data, gen_weights, disc_weights):
-    G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
-    D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
-    return np.log(1 - D_fake)
-
+# def disc_cost(data=None, gen_weights=None, disc_weights):
+#     D_real = real_disc_circuit(data, disc_weights)
+#     G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
+#     D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
+#     return -np.log(D_real) - np.log(1 - D_fake)
+#
+# def gen_cost(data=None, gen_weights, disc_weights=None):
+#     G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
+#     D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
+#     return -np.log(D_fake)
 
 def main():
     print("don't run me")

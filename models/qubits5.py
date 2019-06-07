@@ -24,8 +24,8 @@ def gen_ansatz(x, theta_g):
 
         # RX RZ
         for q in range(NUM_QUBITS):
-            qml.RX(x[q // 2] * theta_g[q, i, 0], wires=q)
-            qml.RZ(x[q // 2] * theta_g[q, i, 1], wires=q)
+            qml.RX(x[q] * theta_g[q, i, 0], wires=q)
+            qml.RZ(x[q] * theta_g[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_QUBITS-1):
@@ -33,6 +33,7 @@ def gen_ansatz(x, theta_g):
 
 #Defines the architecture used for the discriminator
 def disc_ansatz(x, theta_d):
+    print("Disc Ansatz")
     #Reshape theta so params are easier to access
     theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
 
@@ -94,6 +95,7 @@ def disc_ansatz(x, theta_d):
 
 @qml.qnode(dev)
 def real_disc_circuit(data, disc_weights):
+    print('Disc Circuit')
     """
     Feeds discriminator with true examples
 

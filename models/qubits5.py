@@ -98,6 +98,7 @@ def real_disc_circuit(data, disc_weights):
     """
     discriminator(data, disc_weights)
     votes = [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
+    print(votes)
     return np.sum(votes)/5
 
 @qml.qnode(dev)

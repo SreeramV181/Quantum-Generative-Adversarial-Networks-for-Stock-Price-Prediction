@@ -1,9 +1,11 @@
+import pennylane as qml
+import torch
+import torch.autograd as Variable
+import numpy as np
+import random
+
 from models.qubits5 import *
 from utils.parser import *
-import pennylane as qml
-import random
-from pennylane import numpy as np
-from pennylane.optimize import *
 
 
 
@@ -17,11 +19,11 @@ def main():
     training_data = parseCSV("data/daily_adjusted_FB.csv")
 
     #Initialize weights
-    gen_weights = np.random.normal(loc=np.pi, scale=EPS, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
-    disc_weights = np.random.normal(loc=0.0, scale=EPS, size=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER))
+    gen_weights = torch.randn(sizes=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER), dtype=torch.float64, requires_grad=True) * EPS + np.pi
+    disc_weights = torch.randn(sizes=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER), dtype=torch.float64, requires_grad=True) * EPS
 
     #Initialize optimizer
-    opt = GradientDescentOptimizer(0.1)
+    optimizer = torch.optim.SGD(params=[gen_weights, disc_weights], lr=.1, momentum=.9)
     for i in range(NUM_EPOCHS):
         epoch_d_cost = 0
         epoch_g_cost = 0
@@ -34,9 +36,9 @@ def main():
             def disc_cost(d_weights):
                 cost = 0.0
                 for j in range(MINIBATCH_SIZE):
-                    D_real = prob_real(real_disc_circuit(d_weights, data=data[j][0] + [data[j][1]]))
-                    G_real = gen_output(real_gen_circuit(gen_weights, data=data[j][0]))
-                    D_fake = prob_real(real_disc_circuit(d_weights, data=data[j][0] + [G_real]))
+                    D_real = prob_real(real_disc_circuit(d_weights, data=torch.tensor(data[j][0] + [data[j][1]], requires_grad=False)))
+                    G_real = gen_output(real_gen_circuit(gen_weights, data=torch.tensor(data[j][0], requires_grad=False)))
+                    D_fake = prob_real(real_disc_circuit(d_weights, data=torch.tensor(data[j][0] + [G_real], requires_grad=False)))
                     cost -= np.log(D_real) + np.log(1 - D_fake)
                 cost /= MINIBATCH_SIZE
                 return cost
@@ -44,16 +46,24 @@ def main():
             def gen_cost(g_weights):
                 cost = 0.0
                 for j in range(MINIBATCH_SIZE):
-                    G_real = gen_output(real_gen_circuit(g_weights, data=data[j][0]))
-                    D_fake = prob_real(real_disc_circuit(disc_weights, data=data[j][0] + [G_real]))
+                    G_real = gen_output(real_gen_circuit(g_weights, data=torch.tensor(data[j][0], requires_grad=False)))
+                    D_fake = prob_real(real_disc_circuit(disc_weights, data=torch.tensor(data[j][0] + [G_real], requires_grad=False)))
                     cost -= np.log(D_fake)
                 cost /= MINIBATCH_SIZE
                 return cost
 
-            disc_weights = opt.step(disc_cost, disc_weights)
-            epoch_d_cost += disc_cost(disc_weights)
-            gen_weights = opt.step(gen_cost, gen_weights)
-            epoch_g_cost += gen_cost(g_weights)
+            optimizer.zero_grad()
+            disc_loss = disc_cost(disc_weights)
+            disc_loss.backward()
+            optimizer.step()
+
+            optimizer.zero_grad()
+            gen_loss = gen_cost(gen_weights)
+            gen_loss.backward()
+            optimizer.step()
+
+            epoch_d_cost += disc_loss.item()
+            epoch_g_cost += gen_loss.item()
         print("Discriminator cost: {}".format(epoch_d_cost))
         print("Generator cost: {}".format(epoch_g_cost))
 

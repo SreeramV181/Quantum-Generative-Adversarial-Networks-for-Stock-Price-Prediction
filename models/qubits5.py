@@ -97,7 +97,8 @@ def real_disc_circuit(data, disc_weights):
 
     """
     discriminator(data, disc_weights)
-    return qml.expval.Hadamard(wires=[i for i in range(NUM_FEATURES + 1)])
+    votes = qml.expval.Hadamard(wires=[i for i in range(NUM_FEATURES + 1)])
+    return np.sum(votes)/5
 
 @qml.qnode(dev)
 def real_gen_circuit(data, gen_weights):
@@ -105,15 +106,23 @@ def real_gen_circuit(data, gen_weights):
     Feeds discriminator with true examples
     """
     generator(data, gen_weights)
-    return qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+    measurements = qml.expval.Hadamard(wires=[i for i in range(NUM_QUBITS)])
+    output = 0.0
+    for i in range(len(measurements)):
+        output += measurements[i] * 2**i
+    return output
 
-def disc_cost(data, disc_weights, real):
-    output = int("".join(str(x) for x in real_disc_circuit(data, disc_weights)), 2)
-    return (output - real)**2
+def disc_cost(data, gen_weights, disc_weights):
+    D_real = real_disc_circuit(data, disc_weights)
+    G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
+    D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
+    return -np.log(D_real) - np.log(1 - D_fake)
 
-def gen_cost(data, gen_weights, real):
-    output = int("".join(str(x) for x in real_gen_circuit(data, gen_weights)), 2)
-    return (output - real)**2
+def gen_cost(data, gen_weights, disc_weights):
+    G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
+    D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
+    return np.log(1 - D_fake)
+
 
 def main():
     print("don't run me")

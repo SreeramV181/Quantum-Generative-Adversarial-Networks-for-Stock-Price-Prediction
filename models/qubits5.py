@@ -97,7 +97,7 @@ def real_disc_circuit(data, disc_weights):
 
     """
     discriminator(data, disc_weights)
-    votes = [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
+    votes = [qml.expval.PauliZ(i) for i in range(NUM_FEATURES + 1)]
     print(votes)
     return np.sum(votes)/5
 
@@ -107,7 +107,7 @@ def real_gen_circuit(data, gen_weights):
     Feeds discriminator with true examples
     """
     generator(data, gen_weights)
-    measurements = [qml.expval.Hadamard(i) for i in range(NUM_QUBITS)]
+    measurements = [qml.expval.PauliZ(i) for i in range(NUM_QUBITS)]
     output = 0.0
     for i in range(len(measurements)):
         output += measurements[i] * 2**i

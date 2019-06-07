@@ -93,7 +93,7 @@ def disc_ansatz(theta_d, x=None):
 
 
 @qml.qnode(dev)
-def real_disc_circuit(data, disc_weights):
+def real_disc_circuit(disc_weights, data=None):
     print('Disc Circuit')
     """
     Feeds discriminator with true examples
@@ -104,7 +104,7 @@ def real_disc_circuit(data, disc_weights):
 
 
 @qml.qnode(dev)
-def real_gen_circuit(data, gen_weights):
+def real_gen_circuit(gen_weights, data=None):
     """
     Feeds discriminator with true examples
     """

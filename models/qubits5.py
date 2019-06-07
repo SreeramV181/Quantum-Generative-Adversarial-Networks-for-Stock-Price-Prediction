@@ -1,6 +1,8 @@
 import pennylane as qml
 from pennylane import numpy as np
 from pennylane.optimize import *
+from utils.parser import *
+import random
 
 NUM_QUBITS = 8 # Constant determining number of qubits
 NUM_LAYERS = 3 # Number of layers in ansatz

@@ -36,17 +36,21 @@ def disc_ansatz(theta_d, x=None):
     #Reshape theta so params are easier to access
     #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
 
+    print("Entered disc ansatz")
     for i in range(NUM_LAYERS):
         # Hadamard
+        print("Hadamard layer {}".format(i + 1))
         for q in range(NUM_FEATURES + 1):
             qml.Hadamard(wires=q)
 
         # RX RZ
+        print("RX RZ layer {}".format(i + 1))
         for q in range(NUM_FEATURES + 1):
             qml.RX(x[q] * theta_d[q, i, 0], wires=q)
             qml.RZ(x[q] * theta_d[q, i, 1], wires=q)
 
         # Entanglement
+        print("Entanglement layer {}".format(i + 1))
         for q in range(NUM_FEATURES):
             qml.CNOT(wires=[q, q + 1])
 
@@ -94,12 +98,13 @@ def disc_ansatz(theta_d, x=None):
 
 @qml.qnode(dev)
 def real_disc_circuit(disc_weights, data=None):
-    print('Disc Circuit')
+    print("Running discriminator circuit")
     """
     Feeds discriminator with true examples
 
     """
     disc_ansatz(disc_weights,x=data)
+    print("Discriminator ansatz complete")
     return [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
 
 

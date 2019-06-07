@@ -24,8 +24,8 @@ def gen_ansatz(theta_g, x=None):
 
         # RX RZ
         for q in range(NUM_QUBITS):
-            qml.RX(x[q] * theta_g[q, i, 0], wires=q)
-            qml.RZ(x[q] * theta_g[q, i, 1], wires=q)
+            qml.RX(x[q // 2] * theta_g[q, i, 0], wires=q)
+            qml.RZ(x[q // 2] * theta_g[q, i, 1], wires=q)
 
         # Entanglement
         for q in range(NUM_QUBITS-1):
@@ -99,7 +99,7 @@ def real_disc_circuit(data, disc_weights):
     Feeds discriminator with true examples
 
     """
-    disc_ansatz(data, disc_weights)
+    disc_ansatz(disc_weights,x=data)
     return [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
 
 
@@ -108,7 +108,7 @@ def real_gen_circuit(data, gen_weights):
     """
     Feeds discriminator with true examples
     """
-    gen_ansatz(data, gen_weights)
+    gen_ansatz(gen_weights,x=data)
     return [qml.expval.Hadamard(i) for i in range(NUM_QUBITS)]
 
 def gen_output(measurements):

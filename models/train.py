@@ -66,8 +66,6 @@ def main():
 
                 disc_grad = opt_disc.compute_grad(disc_cost, disc_weights)
                 gen_grad = opt_gen.compute_grad(gen_cost, gen_weights)
-                print(disc_grad[:1])
-                print(gen_grad[:1])
                 disc_weights = opt_disc.apply_grad(disc_grad, disc_weights)
                 gen_weights = opt_gen.apply_grad(gen_grad, gen_weights)
 

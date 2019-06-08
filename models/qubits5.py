@@ -16,7 +16,6 @@ dev = qml.device('default.qubit', wires=NUM_QUBITS)
 def gen_ansatz(theta_g, x=None):
     #Reshape theta so params are easier to access
     #theta_g = theta_g.reshape(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER)
-
     for i in range(NUM_LAYERS):
         # Hadamard
         for q in range(NUM_QUBITS):
@@ -37,30 +36,25 @@ def disc_ansatz(theta_d, x=None):
     #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
     for i in range(NUM_LAYERS):
         # Hadamard
-        print("Hadamard layer {}".format(i + 1))
         for q in range(NUM_FEATURES + 1):
             qml.Hadamard(wires=q)
 
         # RX RZ
-        print("RX RZ layer {}".format(i + 1))
         for q in range(NUM_FEATURES + 1):
             qml.RX(x[q].val * theta_d[q, i, 0], wires=q)
             qml.RZ(x[q].val * theta_d[q, i, 1], wires=q)
 
         # Entanglement
-        print("Entanglement layer {}".format(i + 1))
         for q in range(NUM_FEATURES):
             qml.CNOT(wires=[q, q + 1])
 
 @qml.qnode(dev)
 def real_disc_circuit(disc_weights, data=None):
-    print("Running discriminator circuit")
     """
     Feeds discriminator with true examples
 
     """
     disc_ansatz(disc_weights,x=data)
-    print("Discriminator ansatz complete")
     return [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
 
 
@@ -77,17 +71,6 @@ def gen_output(measurements):
 
 def prob_real(data):
     return np.sum(data)/(NUM_FEATURES + 1)
-
-# def disc_cost(data=None, gen_weights=None, disc_weights):
-#     D_real = real_disc_circuit(data, disc_weights)
-#     G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
-#     D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
-#     return -np.log(D_real) - np.log(1 - D_fake)
-#
-# def gen_cost(data=None, gen_weights, disc_weights=None):
-#     G_real = real_gen_circuit(data[:NUM_FEATURES], gen_weights)
-#     D_fake = real_disc_circuit(data[:NUM_FEATURES] + [G_real], disc_weights)
-#     return -np.log(D_fake)
 
 def main():
     print("I'm here")

@@ -41,7 +41,7 @@ def parseCSV(filename, num_qubits = 8):
 	return training
 
 def main():
-	training, testing = parseCSV("data/daily_adjusted_FB.csv")
+	training, testing = parseCSV("/Users/sreeramv/Documents/GitHub/Quantum-Generative-Adversarial-Networks-for-Stock-Price-Prediction/data/daily_adjusted_FB.csv")
 
 if __name__ == '__main__':
 	main()

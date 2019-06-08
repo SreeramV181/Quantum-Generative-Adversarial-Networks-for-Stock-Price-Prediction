@@ -1,8 +1,9 @@
 import pennylane as qml
 from pennylane import numpy as np
 from pennylane.optimize import *
-from utils.parser import *
 import random
+import os
+import sys
 
 NUM_QUBITS = 8 # Constant determining number of qubits
 NUM_LAYERS = 3 # Number of layers in ansatz
@@ -55,7 +56,7 @@ def real_disc_circuit(disc_weights, data=None):
 
     """
     disc_ansatz(disc_weights,x=data)
-    return [qml.expval.Hadamard(i) for i in range(NUM_FEATURES + 1)]
+    return [qml.expval.PauliZ(i) for i in range(NUM_FEATURES + 1)]
 
 
 @qml.qnode(dev)
@@ -64,18 +65,13 @@ def real_gen_circuit(gen_weights, data=None):
     Feeds discriminator with true examples
     """
     gen_ansatz(gen_weights,x=data)
-    return [qml.expval.Hadamard(i) for i in range(NUM_QUBITS)]
+    return [qml.expval.PauliZ(i) for i in range(NUM_QUBITS)]
 
 def gen_output(measurements):
     return np.sum([measurements[i] * 2**i for i in range(NUM_QUBITS)])
 
 def prob_real(data):
-    #print(type(data[0]))
-    total = 0.0
-    for i in data:
-        total += abs(i)
-    return total/(NUM_FEATURES + 1)
-    #return data.sum()/(NUM_FEATURES + 1)
+    return data.__abs__().sum()/(NUM_FEATURES + 1)
 
 def main():
     print("I'm here")

@@ -35,8 +35,6 @@ def gen_ansatz(theta_g, x=None):
 def disc_ansatz(theta_d, x=None):
     #Reshape theta so params are easier to access
     #theta_d = theta_d.reshape(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER)
-    print(x)
-    print("Entered disc ansatz")
     for i in range(NUM_LAYERS):
         # Hadamard
         print("Hadamard layer {}".format(i + 1))
@@ -53,48 +51,6 @@ def disc_ansatz(theta_d, x=None):
         print("Entanglement layer {}".format(i + 1))
         for q in range(NUM_FEATURES):
             qml.CNOT(wires=[q, q + 1])
-
-# def generator(x, theta_g):
-#     """
-#     Variational circuit meant to generate next stock price given 4 previous prices
-#
-#     Args:
-#         x: array containing previous 4 stock prices
-#         w: variables of the circuit to optimize
-#     """
-#
-#     # hi
-#
-#     # for i in range(0, NUM_QUBITS - 2):
-#     #     qml.CNOT(wires=[i, i + 1])
-#     # for i in range(0, NUM_QUBITS - 1):
-#     #     qml.Hadamard(wires=i)
-#
-#     # #Apply a layer of RX
-#     # for i in range(0, NUM_QUBITS - 1):
-#     #     qml.RX(w[i] * x[i], wires=i)
-#
-#     # initial_guess_theta = np.random.uniform(low=0, high=2 * np.pi, size=(NUM_QUBITS, NUM_LAYERS, 2))
-#     gen_ansatz(x, theta_g)
-#
-# def discriminator(x, theta_d):
-#     """
-#     Variational circuit that predicts next stock price based on previous 4 stock prices
-#
-#     Args:
-#         x: array containing previous 5 stock prices
-#         w: variables of the circuit to optimize
-#     """
-#     #Entangle qubits,
-#
-#     # for i in range(0, NUM_QUBITS):
-#     #     qml.Hadamard(wires=i)
-#
-#     # #Apply a layer of RX
-#     # for i in range(0, NUM_QUBITS):
-#     #     qml.RX(w[i] * x[i], wires=i)
-#     disc_ansatz(x, theta_d)
-
 
 @qml.qnode(dev)
 def real_disc_circuit(disc_weights, data=None):

@@ -29,7 +29,7 @@ def parseCSV(filename, num_qubits = 8):
 	for i in range(len(raw) - window_size):
 		data_pairs.append((raw[i:i+window_size], raw[i + window_size]))
 
-	random.shuffle(data_pairs)
+	#random.shuffle(data_pairs)
 
 	# print(data_pairs)
 

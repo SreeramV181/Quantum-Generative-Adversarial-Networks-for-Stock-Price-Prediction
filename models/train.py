@@ -4,6 +4,7 @@ import pennylane as qml
 import random
 from pennylane import numpy as np
 from pennylane.optimize import *
+import pickle
 
 
 
@@ -15,7 +16,9 @@ def main():
     MINIBATCH_SIZE = 1
 
     training_data = parseCSV("data/daily_adjusted_FB.csv")
-    training_data = training_data[:5]
+    training_data = training_data[-50:]
+
+    statistics = {'gen_loss': [], 'disc_loss': []}
 
     #Initialize weights
     gen_weights = np.random.normal(loc=np.pi/6, scale=EPS, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
@@ -59,6 +62,12 @@ def main():
             epoch_g_cost += gen_cost(gen_weights)
         print("Discriminator cost: {}".format(epoch_d_cost))
         print("Generator cost: {}".format(epoch_g_cost))
+        statistics['gen_loss'].append(epoch_g_cost)
+        statistics['disc_cost'].append(epoch_d_cost)
+
+        f = open('stats' + str(i) + '.pkl', 'w')   # Pickle file is newly created where foo1.py is
+        pickle.dump(statistics, f)          # dump data to f
+        f.close()
 
 if __name__ == '__main__':
     main()

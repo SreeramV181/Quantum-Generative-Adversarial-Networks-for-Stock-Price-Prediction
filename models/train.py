@@ -14,7 +14,7 @@ def main():
     #Constants
     NUM_EPOCHS = 50
     EPS = 1e-1
-    MINIBATCH_SIZE = 1
+    MINIBATCH_SIZE = 5
     NUM_DATAPOINTS = 50
 
     training_data = parseCSV("/Users/sreeramv/Documents/GitHub/Quantum-Generative-Adversarial-Networks-for-Stock-Price-Prediction/data/daily_adjusted_FB.csv")

@@ -70,7 +70,12 @@ def gen_output(measurements):
     return np.sum([measurements[i] * 2**i for i in range(NUM_QUBITS)])
 
 def prob_real(data):
-    return np.sum(data)/(NUM_FEATURES + 1)
+    #print(type(data[0]))
+    total = 0.0
+    for i in data:
+        total += abs(i)
+    return total/(NUM_FEATURES + 1)
+    #return data.sum()/(NUM_FEATURES + 1)
 
 def main():
     print("I'm here")

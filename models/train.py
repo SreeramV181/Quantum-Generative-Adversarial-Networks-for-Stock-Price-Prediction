@@ -15,13 +15,14 @@ def main():
     MINIBATCH_SIZE = 1
 
     training_data = parseCSV("data/daily_adjusted_FB.csv")
+    training_data = training_data[:5]
 
     #Initialize weights
-    gen_weights = np.random.normal(loc=np.pi, scale=EPS, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
-    disc_weights = np.random.normal(loc=0.0, scale=EPS, size=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER))
+    gen_weights = np.random.normal(loc=np.pi/6, scale=EPS, size=(NUM_QUBITS, NUM_LAYERS, PARAMS_PER_LAYER))
+    disc_weights = np.random.normal(loc=np.pi/6, scale=EPS, size=(NUM_FEATURES + 1, NUM_LAYERS, PARAMS_PER_LAYER))
 
     #Initialize optimizer
-    opt = GradientDescentOptimizer(0.1)
+    opt = GradientDescentOptimizer(0.001)
     for i in range(NUM_EPOCHS):
         epoch_d_cost = 0
         epoch_g_cost = 0
@@ -38,6 +39,7 @@ def main():
                     G_real = gen_output(real_gen_circuit(gen_weights, data=data[j][0]))
                     D_fake = prob_real(real_disc_circuit(d_weights, data=data[j][0] + [G_real]))
                     cost -= np.log(D_real) + np.log(1 - D_fake)
+                    #print("Disc_cost = {}".format(cost))
                 cost /= MINIBATCH_SIZE
                 return cost
 
@@ -47,13 +49,14 @@ def main():
                     G_real = gen_output(real_gen_circuit(g_weights, data=data[j][0]))
                     D_fake = prob_real(real_disc_circuit(disc_weights, data=data[j][0] + [G_real]))
                     cost -= np.log(D_fake)
+                    #print("Gen_cost = {}".format(cost))
                 cost /= MINIBATCH_SIZE
                 return cost
 
             disc_weights = opt.step(disc_cost, disc_weights)
             epoch_d_cost += disc_cost(disc_weights)
             gen_weights = opt.step(gen_cost, gen_weights)
-            epoch_g_cost += gen_cost(g_weights)
+            epoch_g_cost += gen_cost(gen_weights)
         print("Discriminator cost: {}".format(epoch_d_cost))
         print("Generator cost: {}".format(epoch_g_cost))
 

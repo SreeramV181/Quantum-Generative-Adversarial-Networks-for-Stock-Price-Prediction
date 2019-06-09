@@ -3,10 +3,12 @@ This project uses the Pennylane library to create quantum variational circuits c
 
 ## Instructions to Run
 
-First run, 
+First run
 
 pip install pennylane
+
 pip install pennylane-forest
+
 pip install pickle
 
 and any other imported files.
